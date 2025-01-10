@@ -17,6 +17,11 @@
 <script>
 import axios from 'axios';
 
+const loadLargeModule = async () => {
+  const { default: axios } = await import('axios');
+  // 使用 largeModule
+};
+
 export default {
   data() {
     return {
