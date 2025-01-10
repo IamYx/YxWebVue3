@@ -22,7 +22,7 @@ const count = ref(0)
     <p>{{ joke }}</p>
   </div>
   <button type="button" @click="changeJoke">count is: {{ clickCount }}</button>
-  <input type="text" v-model="inputValue" placeholder="send to" />
+  <input type="text" v-model="inputValue1" placeholder="send to" />
   <button type="button" @click="sendJoke">sendJoke</button>
   
   <ul class="left-aligned-list">
@@ -96,7 +96,7 @@ li {
 		    const clickCount = ref(0);
 		    const currUser = ref('');
 			const inputValue0 = ref('');
-		    const inputValue = ref('');
+		    const inputValue1 = ref('');
 		    const dialogVisible = ref(false);
 		
 		    const handleClick = (item) => {
@@ -117,7 +117,8 @@ li {
 		      englishJoke,
 		      clickCount,
 		      currUser,
-		      inputValue,
+		      inputValue0,
+			  inputValue1,
 		      dialogVisible,
 		      handleClick,
 		      showDialog
@@ -162,7 +163,7 @@ li {
 			  try {
 			      const message = NIM.getInstance().V2NIMMessageCreator.createTextMessage(this.joke);
 				  message.serverExtension = 'abc';
-				  const coversationId = NIM.getInstance().V2NIMConversationIdUtil.p2pConversationId(this.inputValue);
+				  const coversationId = NIM.getInstance().V2NIMConversationIdUtil.p2pConversationId(this.inputValue1);
 				  console.log('=== 发送1')
 				  let res = await NIM.getInstance().V2NIMMessageService.sendMessage(message, coversationId);
 				  if (res.message.sendingState == 1) {
