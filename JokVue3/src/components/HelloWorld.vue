@@ -1,10 +1,96 @@
 <script setup>
 import { ref } from 'vue'
+import NIM, { V2NIM, V2NIMMessageCreator, V2NIMSendMessageResult } from 'nim-web-sdk-ng';
+import { useRouter } from 'vue-router';
 defineProps({
-  msg: String
+  msg: String,
 })
 
 const count = ref(0)
+const inputValue0 = ref('');
+const inputValue1 = ref('');
+
+const joke = ref('');
+const jokes = ref([]);
+const englishJoke = ref('');
+const clickCount = ref(0);
+const currUser = ref('');
+const dialogVisible = ref(false);
+		
+const handleClick = (item) => {
+	console.log(`点击了: ${item}`);
+	joke.value = item;
+};
+		
+const showDialog = () => {
+	dialogVisible.value = true;
+	setTimeout(() => {
+		dialogVisible.value = false;
+	}, 3000);
+};
+
+const nim = NIM.getInstance({
+		appkey: "4727023efa991d31d61b3b32e819bd5b",
+		debugLevel: "debug",
+		apiVersion: "v2"
+})
+			
+nim.V2NIMLoginService.on('onConnectStatus', function (status) {
+	console.log('=== onConnectStatus' + status)
+});
+
+const router = useRouter();
+const goToNextPage = () => {
+	router.push('/TwoPage');
+};
+const changeJoke = async() => {
+	try {
+		const response = await fetch('https://v2.jokeapi.dev/joke/Any');
+		const data = await response.json();
+		if (data.error) {
+			console.error('获取笑话数据出错:', data.error);
+		} else {
+			joke.value = data.joke || `${data.setup}  ${data.delivery}`;
+			jokes.value.push(`【${this.jokes.length}】` + this.joke);
+			clickCount.value++;
+		}
+	} catch (error) {
+		console.error('获取笑话数据出错:', error);
+	}
+};
+const getNimCurrUser = async() => {
+	const user = await NIM.getInstance().V2NIMUserService.getUserList([inputValue0.value]);
+	currUser.value = user[0].name;
+};
+const loginAction = async() => {
+	try {
+		await NIM.getInstance().V2NIMLoginService.login(inputValue0.value, "123456", {
+			"forceMode": false
+		});
+		getNimCurrUser();
+		changeJoke();
+	} catch (err) {
+		console.log('===0' + err)
+	}
+};
+const sendJoke = async() => {
+	try {
+		const message = NIM.getInstance().V2NIMMessageCreator.createTextMessage(joke.value);
+		message.serverExtension = 'abc';
+		const coversationId = NIM.getInstance().V2NIMConversationIdUtil.p2pConversationId(inputValue1.value);
+		console.log('=== 发送1')
+		let res = await NIM.getInstance().V2NIMMessageService.sendMessage(message, coversationId);
+		if (res.message.sendingState == 1) {
+			showDialog()
+		} else {
+			console.log('=== 发送失败')
+		}
+	} catch(err) {
+		// todo error
+		console.log('===' + err)
+	}
+};
+
 </script>
 
 <template>
@@ -70,116 +156,3 @@ li {
   border-radius: 10px;
 }
 </style>
-
-<script>
-	import NIM, { V2NIM, V2NIMMessageCreator, V2NIMSendMessageResult } from 'nim-web-sdk-ng';
-      export default {
-		  
-		async mounted() {
-			
-			const nim = NIM.getInstance({
-			    appkey: "4727023efa991d31d61b3b32e819bd5b",
-			    debugLevel: "debug",
-			    apiVersion: "v2"
-			})
-			
-			nim.V2NIMLoginService.on('onConnectStatus', function (status) {
-				console.log('=== onConnectStatus' + status)
-			});
-			
-			
-		},
-		setup() {
-			const inputValue0 = ref('');
-			const inputValue1 = ref('');
-			return {
-				inputValue0,
-				inputValue1
-			};
-		},
-		data() {
-		    const joke = ref('');
-		    const jokes = ref([]);
-		    const englishJoke = ref('');
-		    const clickCount = ref(0);
-		    const currUser = ref('');
-		    const dialogVisible = ref(false);
-		
-		    const handleClick = (item) => {
-		      console.log(`点击了: ${item}`);
-		      joke.value = item;
-		    };
-		
-		    const showDialog = () => {
-		      dialogVisible.value = true;
-		      setTimeout(() => {
-		        dialogVisible.value = false;
-		      }, 3000);
-		    };
-		
-		    return {
-		      joke,
-		      jokes,
-		      englishJoke,
-		      clickCount,
-		      currUser,
-		      dialogVisible,
-		      handleClick,
-		      showDialog
-		    };
-		},
-        methods: {
-		  goToNextPage() {
-			this.$router.push('/TwoPage');
-		  },
-          async changeJoke() {
-            try {
-              const response = await fetch('https://v2.jokeapi.dev/joke/Any');
-              const data = await response.json();
-              if (data.error) {
-                console.error('获取笑话数据出错:', data.error);
-              } else {
-                this.joke = data.joke || `${data.setup}  ${data.delivery}`;
-				this.jokes.push(`【${this.jokes.length}】` + this.joke);
-				this.clickCount++;
-              }
-            } catch (error) {
-              console.error('获取笑话数据出错:', error);
-            }
-          },
-		  async getNimCurrUser() {
-			  const user = await NIM.getInstance().V2NIMUserService.getUserList(['ceshi8']);
-			  this.currUser = user[0].name;
-		  },
-		  async loginAction() {
-			  try {
-			    await NIM.getInstance().V2NIMLoginService.login(this.inputValue0, "123456", {
-			      "forceMode": false
-			    });
-			    
-			    this.getNimCurrUser();
-				this.changeJoke();
-			  } catch (err) {
-			    console.log('===0' + err)
-			  }
-		  },
-		  async sendJoke() {
-			  try {
-			      const message = NIM.getInstance().V2NIMMessageCreator.createTextMessage(this.joke);
-				  message.serverExtension = 'abc';
-				  const coversationId = NIM.getInstance().V2NIMConversationIdUtil.p2pConversationId(this.inputValue1);
-				  console.log('=== 发送1')
-				  let res = await NIM.getInstance().V2NIMMessageService.sendMessage(message, coversationId);
-				  if (res.message.sendingState == 1) {
-					  this.showDialog()
-				  } else {
-					  console.log('=== 发送失败')
-				  }
-			  } catch(err) {
-			      // todo error
-				  console.log('===' + err)
-			  }
-		  }
-        }
-      };
-</script>
