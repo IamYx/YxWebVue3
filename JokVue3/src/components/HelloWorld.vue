@@ -89,14 +89,20 @@ li {
 			
 			
 		},
+		setup() {
+			const inputValue0 = ref('');
+			const inputValue1 = ref('');
+			return {
+				inputValue0,
+				inputValue1
+			};
+		},
 		data() {
 		    const joke = ref('');
 		    const jokes = ref([]);
 		    const englishJoke = ref('');
 		    const clickCount = ref(0);
 		    const currUser = ref('');
-			const inputValue0 = ref('');
-		    const inputValue1 = ref('');
 		    const dialogVisible = ref(false);
 		
 		    const handleClick = (item) => {
@@ -117,8 +123,6 @@ li {
 		      englishJoke,
 		      clickCount,
 		      currUser,
-		      inputValue0,
-			  inputValue1,
 		      dialogVisible,
 		      handleClick,
 		      showDialog
