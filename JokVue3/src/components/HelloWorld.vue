@@ -10,7 +10,7 @@ const count = ref(0)
 <template>
   <h1>{{ msg }}</h1>
 
-  <input type="text" v-model="inputValue0" placeholder="send to" />
+  <input type="text" v-model="inputValue0" placeholder="login" />
   <button type="button" @click="loginAction">login</button>
   <p>
     Welcome:
