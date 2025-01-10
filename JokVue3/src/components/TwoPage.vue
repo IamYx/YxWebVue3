@@ -1,3 +1,34 @@
+<script setup>
+import { ref } from 'vue'
+const images = ref([]);
+const hitCount = ref(0);
+const isHit = ref(false);
+const liImageClass = ref('liImageClass');
+const woodenFishImage = ref('https://img1.baidu.com/it/u=2789072492,3212934856&fm=253&app=120&size=w931&n=0&f=GIF&fmt=auto?sec=1736355600&t=70c66a1fea960cb28ff7ccbacd5645e8');
+const loadLargeModule = async () => {
+	  const { default: axios } = await import('axios');
+	  // 使用 
+	  try {
+	    const response = await axios.get('https://picsum.photos/v2/list');
+	    images.value = response.data;
+	  } catch (error) {
+	    console.error('获取图片列表失败', error);
+	  }
+	};
+
+const a = loadLargeModule()
+	
+const hitWoodenFish = () => {
+      hitCount.value++;
+      isHit.value = true;
+      setTimeout(() => {
+        isHit.value = false;
+      }, 500); 
+      console.log("木鱼被敲了！");
+    };
+
+</script>
+
 <template>
   <div>
     <button @click="hitWoodenFish">+1</button>
@@ -13,45 +44,6 @@
     </ul>
   </div>
 </template>
-
-<script>
-import axios from 'axios';
-
-const loadLargeModule = async () => {
-  const { default: axios } = await import('axios');
-  // 使用 largeModule
-};
-
-export default {
-  data() {
-    return {
-      images: [],
-      hitCount: 0,
-      isHit: false,
-	  liImageClass: 'liImageClass',
-      woodenFishImage: 'https://img1.baidu.com/it/u=2789072492,3212934856&fm=253&app=120&size=w931&n=0&f=GIF&fmt=auto?sec=1736355600&t=70c66a1fea960cb28ff7ccbacd5645e8' 
-    };
-  },
-  async created() {
-    try {
-      const response = await axios.get('https://picsum.photos/v2/list');
-      this.images = response.data;
-    } catch (error) {
-      console.error('获取图片列表失败', error);
-    }
-  },
-  methods: {
-    hitWoodenFish() {
-      this.hitCount++;
-      this.isHit = true;
-      setTimeout(() => {
-        this.isHit = false;
-      }, 500); 
-      console.log("木鱼被敲了！");
-    }
-  }
-};
-</script>
 
 <style>
 .liImageClass {

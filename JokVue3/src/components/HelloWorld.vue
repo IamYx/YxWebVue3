@@ -51,7 +51,7 @@ const changeJoke = async() => {
 			console.error('获取笑话数据出错:', data.error);
 		} else {
 			joke.value = data.joke || `${data.setup}  ${data.delivery}`;
-			jokes.value.push(`【${this.jokes.length}】` + this.joke);
+			jokes.value.push(`【${jokes.value.length}】` + joke.value);
 			clickCount.value++;
 		}
 	} catch (error) {
