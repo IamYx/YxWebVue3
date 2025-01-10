@@ -75,6 +75,9 @@ li {
       export default {
 		  
 		async mounted() {
+			
+			this.inputValue = "ceshi6"
+			
 			const nim = NIM.getInstance({
 			    appkey: "4727023efa991d31d61b3b32e819bd5b",
 			    debugLevel: "debug",
