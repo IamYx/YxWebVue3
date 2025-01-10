@@ -10,6 +10,8 @@ const count = ref(0)
 <template>
   <h1>{{ msg }}</h1>
 
+  <input type="text" v-model="inputValue0" placeholder="send to" />
+  <button type="button" @click="loginAction">login</button>
   <p>
     Welcome:
     <a href="https://www.baidu.com/" target="_blank">{{currUser}}</a>
@@ -19,7 +21,6 @@ const count = ref(0)
   <div>
     <p>{{ joke }}</p>
   </div>
-
   <button type="button" @click="changeJoke">count is: {{ clickCount }}</button>
   <input type="text" v-model="inputValue" placeholder="send to" />
   <button type="button" @click="sendJoke">sendJoke</button>
@@ -76,8 +77,6 @@ li {
 		  
 		async mounted() {
 			
-			this.inputValue = "ceshi6"
-			
 			const nim = NIM.getInstance({
 			    appkey: "4727023efa991d31d61b3b32e819bd5b",
 			    debugLevel: "debug",
@@ -88,45 +87,42 @@ li {
 				console.log('=== onConnectStatus' + status)
 			});
 			
-			try {
-			  await nim.V2NIMLoginService.login("ceshi8", "123456", {
-			    "forceMode": false
-			  });
-			  
-			  this.getNimCurrUser();
-			  this.changeJoke();
-			} catch (err) {
-			  console.log('===0' + err)
-			}
-		},
-        data() {
 			
-		  const handleClick = (item) => {
-		    console.log(`点击了: ${item}`);
-		    // 在这里添加您的具体逻辑
-			this.joke = item;
-		  };
-		  
-		  const dialogVisible = ref(false);
-		  const showDialog = () => {
-		    dialogVisible.value = true;
-			setTimeout(() => {
-			    dialogVisible.value = false;
-			}, 3000);
-		  };
-		  
-          return {
-            joke: '',
-			jokes: [],
-			handleClick,
-            englishJoke: '',
-			clickCount: 0,
-			currUser: '',
-			inputValue: '',
-			dialogVisible, 
-			showDialog
-          };
-        },
+		},
+		data() {
+		    const joke = ref('');
+		    const jokes = ref([]);
+		    const englishJoke = ref('');
+		    const clickCount = ref(0);
+		    const currUser = ref('');
+			const inputValue0 = ref('');
+		    const inputValue = ref('');
+		    const dialogVisible = ref(false);
+		
+		    const handleClick = (item) => {
+		      console.log(`点击了: ${item}`);
+		      joke.value = item;
+		    };
+		
+		    const showDialog = () => {
+		      dialogVisible.value = true;
+		      setTimeout(() => {
+		        dialogVisible.value = false;
+		      }, 3000);
+		    };
+		
+		    return {
+		      joke,
+		      jokes,
+		      englishJoke,
+		      clickCount,
+		      currUser,
+		      inputValue,
+		      dialogVisible,
+		      handleClick,
+		      showDialog
+		    };
+		},
         methods: {
 		  goToNextPage() {
 			this.$router.push('/TwoPage');
@@ -149,6 +145,18 @@ li {
 		  async getNimCurrUser() {
 			  const user = await NIM.getInstance().V2NIMUserService.getUserList(['ceshi8']);
 			  this.currUser = user[0].name;
+		  },
+		  async loginAction() {
+			  try {
+			    await NIM.getInstance().V2NIMLoginService.login(this.inputValue0, "123456", {
+			      "forceMode": false
+			    });
+			    
+			    this.getNimCurrUser();
+				this.changeJoke();
+			  } catch (err) {
+			    console.log('===0' + err)
+			  }
 		  },
 		  async sendJoke() {
 			  try {
